@@ -5,7 +5,7 @@ Created on 2014-5-3
 
 @author: leidaxia
 '''
-dbname = 'news'
+dbname = 'newsvideo'
 user = 'postgres'
 
 host = 'localhost'

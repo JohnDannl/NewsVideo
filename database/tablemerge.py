@@ -12,7 +12,7 @@ import time
 import dbconfig
 
 def InsertItem(tablename, data):    
-    if ChkExistRow(tablename, data[0],data[12]):
+    if ChkExistRow(tablename,data[13]):
         return
     query = """INSERT INTO """ + tablename + """(
                vid,title,url,thumb,summary,keywords,newsid,vtype,source,related,loadtime,duration,web,mvid,mtype,click)
@@ -30,7 +30,7 @@ def InsertItems(tablename, datas):
     dbconn.insertMany(query, datas)
 
 def InsertItemDict(tablename, data):
-    if ChkExistRow(tablename, data['vid'],data['web']):
+    if ChkExistRow(tablename, data['mvid']):
         return 1
     query = "INSERT INTO " + tablename + """(
              vid,title,url,thumb,summary,keywords,newsid,vtype,source,related,loadtime,duration,web,mvid,mtype,click) 
@@ -40,7 +40,7 @@ def InsertItemDict(tablename, data):
     return 0
 
 def getAllCount(tablename):
-    query="select count(*) from "+tablename
+    query="select count(id) from "+tablename
     count=dbconn.Select(query,())[0][0]
     return count
 
@@ -51,8 +51,8 @@ def getAllRecords(tablename):
 
 def getRecordsByLoadTime(tablename, starttime, endtime):
     '''@param tablename: table name
-    @param starttime: the start time of query in format:%Y-%m-%d %H:%M:%S
-    @param endtime: the end time of query in format:%Y-%m-%d %H:%M:%S
+    @param starttime: seconds from epoch
+    @param endtime: seconds from epoch
     '''
 #     starttime = time.strftime("%Y-%m-%d %H:%M:%S", starttime)
 #     endtime=time.strftime("%Y-%m-%d %H:%M:%S", endtime)
@@ -62,22 +62,13 @@ def getRecordsByLoadTime(tablename, starttime, endtime):
 
 def getTitleByLoadTime(tablename,startday=30,enday=None):
     # return [(title,mvid),] 
-    sttuple=time.localtime(time.time()-86400.0*startday)
-    starttime = time.strftime("%Y-%m-%d %H:%M:%S", sttuple)
+    starttime=time.time()-86400.0*startday
     if enday==None:
-        endtime=time.strftime('%Y-%m-%d %H:%M:%S')
+        endtime=time.time()
     else:
-        endtuple=time.localtime(time.time()-86400.0*enday)
-        endtime=time.strftime("%Y-%m-%d %H:%M:%S", endtuple)
-    query = "SELECT title,mvid FROM " + tablename + """ WHERE loadtime >= %s AND loadtime <= %s""" 
+        endtime=time.time()-86400.0*enday
+    query = "SELECT mvid,title FROM " + tablename + """ WHERE loadtime >= %s AND loadtime <= %s""" 
     rows = dbconn.Select(query, (starttime,endtime))   
-    return rows
-
-def getRecordsByWebVid(tablename,web,vid):
-    # return the user clicked video info,should be only one if no accident
-    # the return column:title,vtype,mvid,mtype
-    query = "SELECT title,vtype,mvid,mtype FROM " + tablename + """ WHERE web = %s AND vid = %s""" 
-    rows = dbconn.Select(query, (web,vid))   
     return rows
 
 def getRecordsByMVid(tablename,mvid):
@@ -90,7 +81,7 @@ def getRecordsByMVid(tablename,mvid):
 
 def getTopUrls(tablename,topnum=10):
 #     return [(url,vid),]
-    query='select url,vid from '+tablename+' order by loadtime desc,vid desc limit %s'
+    query='select url,mvid from '+tablename+' order by loadtime desc,mvid desc limit %s'
     rows=dbconn.Select(query,(topnum,))
     return rows
 
@@ -98,50 +89,50 @@ def getTopRecords(tablename,topnum=10,mtype=None):
 #     @attention: get top @param topnum: records from @param tablename:
 #     order by time,that is,get recent @param topnum: records  
     if not mtype:
-        query='select * from '+tablename+' order by loadtime desc,vid desc limit %s'
+        query='select * from '+tablename+' order by loadtime desc,mvid desc limit %s'
         rows=dbconn.Select(query,(topnum,))
     else:
-        query='select * from '+tablename+' where mtype = %s order by loadtime desc,vid desc limit %s'
+        query='select * from '+tablename+' where mtype = %s order by loadtime desc,mvid desc limit %s'
         rows=dbconn.Select(query,(mtype,topnum))
     return rows
 
-def getTopETSVRecords(tablename,loadtime,vid,topnum=10,mtype=None):
-#     return the topnum records whose loadtime equals @param loadtime: and vid smaller than @param vid:
+def getTopETSVRecords(tablename,loadtime,mvid,topnum=10,mtype=None):
+#     return the topnum records whose loadtime equals @param loadtime: and vid smaller than @param mvid:
     if not mtype: 
-        query='select * from '+tablename+' where loadtime = %s and vid < %s order by loadtime desc,vid desc limit %s'
-        rows=dbconn.Select(query,(loadtime,vid,topnum))
+        query='select * from '+tablename+' where loadtime = %s and mvid < %s order by loadtime desc,mvid desc limit %s'
+        rows=dbconn.Select(query,(loadtime,mvid,topnum))
     else:
-        query='select * from '+tablename+' where mtype = %s and loadtime = %s and vid < %s order by loadtime desc,vid desc limit %s'
-        rows=dbconn.Select(query,(mtype,loadtime,vid,topnum))
+        query='select * from '+tablename+' where mtype = %s and loadtime = %s and mvid < %s order by loadtime desc,mvid desc limit %s'
+        rows=dbconn.Select(query,(mtype,loadtime,mvid,topnum))
     return rows
 
 def getTopSTRecords(tablename,loadtime,topnum=10,mtype=None):
 #     return the topnum records smaller loadtime  
     if not mtype:
-        query='select * from '+tablename+' where loadtime < %s order by loadtime desc,vid desc limit %s'
+        query='select * from '+tablename+' where loadtime < %s order by loadtime desc,mvid desc limit %s'
         rows=dbconn.Select(query,(loadtime,topnum))
     else:
-        query='select * from '+tablename+' where mtype = %s and loadtime < %s order by loadtime desc,vid desc limit %s'
+        query='select * from '+tablename+' where mtype = %s and loadtime < %s order by loadtime desc,mvid desc limit %s'
         rows=dbconn.Select(query,(mtype,loadtime,topnum))
     return rows
 
-def getBottomETBVRecords(tablename,loadtime,vid,topnum=10,mtype=None):
-#     return the bottom records equal loadtime bigger vid
+def getBottomETBVRecords(tablename,loadtime,mvid,topnum=10,mtype=None):
+#     return the bottom records equal loadtime bigger mvid
     if not mtype:
-        query='select * from '+tablename+' where loadtime = %s and vid > %s order by loadtime asc,vid asc limit %s'
-        rows=dbconn.Select(query,(loadtime,vid,topnum))
+        query='select * from '+tablename+' where loadtime = %s and mvid > %s order by loadtime asc,mvid asc limit %s'
+        rows=dbconn.Select(query,(loadtime,mvid,topnum))
     else:
-        query='select * from '+tablename+' where mtype = %s and loadtime = %s and vid > %s order by loadtime asc,vid asc limit %s'
-        rows=dbconn.Select(query,(mtype,loadtime,vid,topnum))
+        query='select * from '+tablename+' where mtype = %s and loadtime = %s and mvid > %s order by loadtime asc,mvid asc limit %s'
+        rows=dbconn.Select(query,(mtype,loadtime,mvid,topnum))
     return rows
 
 def getBottomBTRecords(tablename,loadtime,topnum=10,mtype=None):
-#     return the bottom records bigger loadtime bigger vid
+#     return the bottom records bigger loadtime bigger mvid
     if not mtype:
-        query='select * from '+tablename+' where loadtime > %s order by loadtime asc,vid asc limit %s'
+        query='select * from '+tablename+' where loadtime > %s order by loadtime asc,mvid asc limit %s'
         rows=dbconn.Select(query,(loadtime,topnum))
     else:
-        query='select * from '+tablename+' where mtype = %s and loadtime > %s order by loadtime asc,vid asc limit %s'
+        query='select * from '+tablename+' where mtype = %s and loadtime > %s order by loadtime asc,mvid asc limit %s'
         rows=dbconn.Select(query,(mtype,loadtime,topnum))
     return rows
 
@@ -149,19 +140,19 @@ def getTopClickRecords(tablename,topnum=10):
 #     @attention: get top @param topnum: records from @param tablename:
 #     order by click,that is,get hottest @param topnum: records  
 
-    query='select * from '+tablename+' order by click desc,loadtime desc,vid desc limit %s'
+    query='select * from '+tablename+' order by click desc,loadtime desc,mvid desc limit %s'
     rows=dbconn.Select(query,(topnum,))
     return rows
 
-def getTopECESTSVRecords(tablename,click,loadtime,vid,topnum=10):
-#     return the topnum records whose click equals @param click: and vid smaller than @param vid: 
-    query='select * from '+tablename+' where click = %s and loadtime <= %s and vid < %s order by click desc,loadtime desc,vid desc limit %s'
-    rows=dbconn.Select(query,(click,vid,topnum))
+def getTopECSVRecords(tablename,click,mvid,topnum=10):
+#     return the topnum records whose click equals @param click: and mvid smaller than @param mvid: 
+    query='select * from '+tablename+' where click = %s and mvid < %s order by click desc,loadtime desc,mvid desc limit %s'
+    rows=dbconn.Select(query,(click,mvid,topnum))
     return rows
 
 def getTopSCRecords(tablename,click,topnum=10):
 #     return the topnum records smaller click  
-    query='select * from '+tablename+' where click < %s order by click desc,loadtime desc,vid desc limit %s'
+    query='select * from '+tablename+' where click < %s order by click desc,loadtime desc,mvid desc limit %s'
     rows=dbconn.Select(query,(click,topnum))
     return rows
 
@@ -179,47 +170,51 @@ def getTopSCRecords(tablename,click,topnum=10):
 #     rows=dbconn.Select(query,(click,topnum))
 #     return rows
 
-def ChkExistRow(tablename, vid,web):
-    query = "SELECT COUNT(*) FROM " + tablename + " WHERE vid = %s and web = %s"
-    row = dbconn.Select(query, (vid,web))[0][0]
+def ChkExistRow(tablename, mvid):
+    query = "SELECT COUNT(id) FROM " + tablename + " WHERE mvid = %s"
+    row = dbconn.Select(query, (mvid,))[0][0]
     if row == 0:
         return False
     return True
 
-def updateMtype(tablename,mtype,web,vid):
-    query = "UPDATE " + tablename + """ SET mtype = %s WHERE web = %s and vid = %s"""
-    dbconn.Update(query, (mtype,web,vid))
+def updateMtype(tablename,mtype,mvid):
+    query = "UPDATE " + tablename + """ SET mtype = %s WHERE mvid = %s"""
+    dbconn.Update(query, (mtype,mvid))
 
-def increaseClick(web,vid):
+def increaseClick(mvid):
     tablename=dbconfig.mergetable
-    query = 'select click from '+tablename+""" WHERE web = %s and vid = %s"""
-    rows=dbconn.Select(query,(web,vid))
+    query = 'select click from '+tablename+""" WHERE mvid = %s"""
+    rows=dbconn.Select(query,(mvid,))
     if rows !=-1 and len(rows)>0:
         click=rows[0][0]
         click+=1
-        query = "UPDATE " + tablename + """ SET click = %s WHERE web = %s and vid = %s"""
-        dbconn.Update(query, (click,web,vid))
+        query = "UPDATE " + tablename + """ SET click = %s WHERE mvid = %s"""
+        dbconn.Update(query, (click,mvid))
         
 def CreateNewsTable(tablename):
     query = """CREATE TABLE """ + tablename + """(
                id serial primary key,               
-               vid text,
-               title text,
-               url text,
-               thumb text,
-               summary text,
-               keywords text,
-               newsid text,
-               vtype text,
-               source text,
-               related text,               
-               loadtime timestamp,
-               duration text,
-               web text,
-               mvid text,
-               mtype text,
+               vid varchar(255),
+               title varchar(512),
+               url varchar(4096),
+               thumb varchar(4096),
+               summary varchar(10240),
+               keywords varchar(255),
+               newsid varchar(255),
+               vtype varchar(255),
+               source varchar(255),
+               related varchar(4096),               
+               loadtime bigint,
+               duration varchar(255),
+               web varchar(255),
+               mvid varchar(255),
+               mtype varchar(255),
                click integer)"""
     dbconn.CreateTable(query, tablename)
+    dbconn.CreateIndex('create index on table %s (mvid)'%(tablename,))
+    dbconn.CreateIndex('create index on table %s (click)'%(tablename,))
+    dbconn.CreateIndex('create index on table %s (loadtime)'%(tablename,))
+    dbconn.CreateIndex('create index on table %s (vtype,loadtime)'%(tablename,))
 
 if __name__ == "__main__":
     CreateNewsTable(dbconfig.mergetable) 

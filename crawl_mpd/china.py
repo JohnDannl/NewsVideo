@@ -90,8 +90,8 @@ def main():
     pool.join()        
     for info in infoList:
         try:
-            table.InsertItemDict(ctable, info)
-#             print time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(info['loadtime'])),info['title']
+#             table.InsertItemDict(ctable, info)
+            print time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(info['loadtime'])),info['title']
         except:
             logging.error('encoding not supported')
     msg='china has crawled %s records,time cost: %s (seconds)' % (len(infoList), time.time()-oldtime) 

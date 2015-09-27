@@ -5,7 +5,7 @@ import db
 dbconn = db.pgdb()
 import dbconfig
 def InsertItem(tablename, data):    
-    if ChkExistRow(tablename, data[0]):
+    if ChkExistRow(tablename, data[2]):
         return
     query = """INSERT INTO """ + tablename + """(
                vid,title,url,thumb,summary,keywords,newsid,vtype,source,related,loadtime,duration,web)
@@ -23,7 +23,7 @@ def InsertItems(tablename, datas):
     dbconn.insertMany(query, datas)
 
 def InsertItemDict(tablename, data):
-    if ChkExistRow(tablename, data['vid']):
+    if ChkExistRow(tablename, data['url']):
         return 1
     query = "INSERT INTO " + tablename + """(
              vid,title,url,thumb,summary,keywords,newsid,vtype,source,related,loadtime,duration,web) 
@@ -43,8 +43,8 @@ def getAllRecords(tablename):
 
 def getRecordsByLoadTime(tablename, starttime, endtime):
     '''@param tablename: table name
-    @param starttime: the start time of query in format:%Y-%m-%d %H:%M:%S
-    @param endtime: the end time of query in format:%Y-%m-%d %H:%M:%S
+    @param starttime: in seconds from epoch
+    @param endtime: in seconds from epoch
     '''
 #     starttime = time.strftime("%Y-%m-%d %H:%M:%S", starttime)
 #     endtime=time.strftime("%Y-%m-%d %H:%M:%S", endtime)
@@ -56,12 +56,6 @@ def getRecordsBiggerId(tablename,mId):
 #     return records whose id > @param mId: 
     query='select * from '+tablename+' where id > %s order by id asc'
     rows=dbconn.Select(query,(mId,))
-    return rows
-
-def getUrlByVid(tablename,vid):
-#     return url by vid
-    query='select url from '+tablename+' where vid = %s'
-    rows=dbconn.Select(query,(vid,))
     return rows
 
 def getTopUrls(tablename,topnum=10):
@@ -93,9 +87,9 @@ def getTopUrls(tablename,topnum=10):
 #         tmp.append(data[0])
 #     dbconn.Update(query, tmp)
     
-def ChkExistRow(tablename, vid):
-    query = "SELECT COUNT(*) FROM " + tablename + " WHERE vid = %s"
-    row = dbconn.Select(query, (vid,))[0][0]
+def ChkExistRow(tablename, url):
+    query = "SELECT COUNT(id) FROM " + tablename + " WHERE url = %s"
+    row = dbconn.Select(query, (url,))[0][0]
     if row == 0:
         return False
     return True
@@ -114,29 +108,31 @@ def vtypeStatistic(tablename):
 def CreateNewsTable(tablename):
     query = """CREATE TABLE """ + tablename + """(
                id serial primary key,               
-               vid text,
-               title text,
-               url text,
-               thumb text,
-               summary text,
-               keywords text,
-               newsid text,
-               vtype text,
-               source text,
-               related text,               
-               loadtime timestamp,
-               duration text,
-               web text)"""
+               vid varchar(255),
+               title varchar(512),
+               url varchar(4096),
+               thumb varchar(4096),
+               summary varchar(10240),
+               keywords varchar(255),
+               newsid varchar(255),
+               vtype varchar(255),
+               source varchar(255),
+               related varchar(4096),               
+               loadtime bigint,
+               duration varchar(255),
+               web varchar(255))"""
     dbconn.CreateTable(query, tablename)
+    # create index index_name on table_name (column_1,column_2)
+    dbconn.CreateIndex('create index on %s (url)'%tablename)
 
 if __name__ == "__main__":
-#     CreateNewsTable(dbconfig.tableName[0])
-#     CreateNewsTable(dbconfig.tableName[1])
-#     CreateNewsTable(dbconfig.tableName[2])
-#     CreateNewsTable(dbconfig.tableName[3]) 
-    CreateNewsTable(dbconfig.tableName[4]) 
-#     CreateNewsTable(dbconfig.tableName[5])   
-#     CreateNewsTable(dbconfig.tableName[6]) 
+    CreateNewsTable(dbconfig.tableName['china'])
+    CreateNewsTable(dbconfig.tableName['ifeng'])
+    CreateNewsTable(dbconfig.tableName['kankan'])
+    CreateNewsTable(dbconfig.tableName['qq']) 
+    CreateNewsTable(dbconfig.tableName['sina']) 
+    CreateNewsTable(dbconfig.tableName['sohu'])   
+    CreateNewsTable(dbconfig.tableName['v1']) 
     
 #     rows=getTopETBVRecords(dbconfig.tableName[2],'2014-09-04 10:09:02','1310457')
 #     if rows !=-1:
