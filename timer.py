@@ -49,9 +49,9 @@ webdic={'china':china,'ifeng':ifeng,'kankan':kankan,'qq':qq,'sina':sina,
 #     call_async_3()
 #     merge.main()
 #     print 'Main thread begins to sleep at time %s' %(timeformat.getTimeStamp(),)
-
-def call_sync():
-    global count       
+count=0  
+def call_sync():         
+    global count
     count+=1
     if count%24==0:
         merge.garbageDepos(10) 
@@ -59,7 +59,7 @@ def call_sync():
         webdic[web].main()
         merge.mergeWeb(web)
         print 'Main thread begins to sleep at time %s' %(timeFormat.getTimeStamp(),)
-        time.sleep(240)
+        time.sleep(500)
 
 if __name__=='__main__':
     while True:

@@ -51,7 +51,7 @@ def getMainPageInfo(page):
             vInfo['loadtime']=long(time.mktime(time.strptime(item['pubtime'],'%Y-%m-%d %H:%M:%S')))
             vInfo['duration']=''
             vInfo['web']=ctable
-            print time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(vInfo['loadtime'])),vInfo['url']  
+            #print time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(vInfo['loadtime'])),vInfo['url']  
             vInfoList.append(vInfo) 
     return vInfoList   
 def _getSubContentInfo(vInfo):
