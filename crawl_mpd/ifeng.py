@@ -73,7 +73,7 @@ def _getSubContentInfo(vInfo):
         if not vInfo['source']:
             vInfo['source']=''  
         vInfo['related']=''     
-        print time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(vInfo['loadtime'])),vInfo['url']
+        #print time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(vInfo['loadtime'])),vInfo['url']
         return vInfo
     except:
         print 'Error: ',vInfo['url']

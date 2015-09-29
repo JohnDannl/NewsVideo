@@ -6,21 +6,21 @@ Created on 2014-8-6
 @author: JohnDannl
 '''
 import sys
-print sys.getdefaultencoding()
-reload(sys)
-sys.setdefaultencoding('utf-8')
-print sys.getdefaultencoding()
+# print sys.getdefaultencoding()
+# reload(sys)
+# sys.setdefaultencoding('utf-8')
+# print sys.getdefaultencoding()
 
 sys.path.append(r'.')
 sys.path.append(r'./database')
 sys.path.append(r'./crawl')
-sys.path.append(r'./cluster')
+sys.path.append(r'./aggregate')
 sys.path.append(r'./crawl_mpd')
 from apscheduler.scheduler import Scheduler
 # from crawl import sina,sohu,v1,kankan,ifeng,china,qq,timeformat,logger
 from crawl_mpd import sina,sohu,v1,kankan,ifeng,china,qq,timeformat
 from crawl_mpd.logger import log
-from cluster import merge
+from aggregate import merge
 import multiprocessing
 import time
 sched = Scheduler()  

@@ -52,7 +52,7 @@ def getFirstPageInfo():
             vInfo['related']='' # related news is no needed
 #             vInfo['summary']=str(item.find('p',{'class':"desc"}).string)
 #             vInfo['keywords']=item.get('data-key')              
-            print vInfo['title'],vInfo['url']
+            #print vInfo['title'],vInfo['url']
             vInfoList.append(vInfo)
     return vInfoList
       
@@ -91,11 +91,11 @@ def getExtraPageInfo(num):
 def main():
     infoList=[]
     oldtime=time.time()    
-    infoList=getExtraPageInfo(40)    
+    infoList+=getExtraPageInfo(40)    
     for info in infoList:
         try:
-#             table.InsertItemDict(ctable, info)
-            print time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(info['loadtime'])),info['title']
+            table.InsertItemDict(ctable, info)
+#             print time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(info['loadtime'])),info['title']
         except:
             logging.error('encoding not supported')
     msg='sina has crawled %s records,time cost: %s (seconds)' % (len(infoList), time.time()-oldtime) 

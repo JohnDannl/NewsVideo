@@ -29,11 +29,13 @@ headers=[('Host', 'channel.chinanews.com'),
      ('Connection', 'keep-alive'),
      ('Accept-Encoding','gzip, deflate'),
      ('Referer', 'http://www.chinanews.com/shipin/')] 
+
 def getMainPageInfo(page):
     url=r'http://channel.chinanews.com/video/showchannel?tid=4&currentpage='+str(page)    
     content=getHtmlwithCookie(url,headers)
     vInfoList=[] 
     if content:
+        #print content
         info=r1('.*?(\{.*\})',content).replace(r'"',r'_').replace('\'',r'"')
         news = json.loads(info,encoding='utf-8')        
         videoList=[]
@@ -90,8 +92,8 @@ def main():
     pool.join()        
     for info in infoList:
         try:
-#             table.InsertItemDict(ctable, info)
-            print time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(info['loadtime'])),info['title']
+            table.InsertItemDict(ctable, info)
+#             print time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(info['loadtime'])),info['title']
         except:
             logging.error('encoding not supported')
     msg='china has crawled %s records,time cost: %s (seconds)' % (len(infoList), time.time()-oldtime) 

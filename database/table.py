@@ -4,6 +4,7 @@
 import db
 dbconn = db.pgdb()
 import dbconfig
+import time
 def InsertItem(tablename, data):    
     if ChkExistRow(tablename, data[2]):
         return
@@ -41,10 +42,31 @@ def getAllRecords(tablename):
     rows = dbconn.Select(query, ())
     return rows
 
+def getBriefRecords(tablename,dayago=30):
+    starttime=time.time()-24*3600*dayago
+    query = "SELECT id,title,summary,loadtime,web FROM " + tablename+' where loadtime > %s'
+    rows = dbconn.Select(query, (starttime,))
+    return rows
+
+def getMaxId(tablename):
+    query='select max(id) from '+tablename
+    rows=dbconn.Select(query,())
+    return rows[0][0]
+
+def getBriefRecordsBiggerId(tablename,tid):
+    query = "SELECT id,title,summary,loadtime,web FROM " + tablename+' where id > %s'
+    rows = dbconn.Select(query, (tid,))
+    return rows
+
+def getRecordsById(tablename,tid):
+    query = "SELECT * FROM " + tablename+' where id = %s'
+    rows = dbconn.Select(query, (tid,))
+    return rows
+
 def getRecordsByLoadTime(tablename, starttime, endtime):
     '''@param tablename: table name
-    @param starttime: in seconds from epoch
-    @param endtime: in seconds from epoch
+        @param starttime: in seconds from epoch
+        @param endtime: in seconds from epoch
     '''
 #     starttime = time.strftime("%Y-%m-%d %H:%M:%S", starttime)
 #     endtime=time.strftime("%Y-%m-%d %H:%M:%S", endtime)

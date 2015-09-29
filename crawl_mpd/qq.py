@@ -102,10 +102,11 @@ def getPageInfo(page):
                 vInfo['source']='qq'   
                 vInfo['keywords']=''
                 vInfo['related']=''  
-            print time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(vInfo['loadtime'])),vInfo['url']
+            #print time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(vInfo['loadtime'])),vInfo['url']
             vInfoList.append(vInfo)                                
     return vInfoList
-def main():
+
+def main_single():
     infoList=[] 
     oldtime=time.time()
 #     page can be started from 0 to 5 which represents different category
@@ -121,7 +122,8 @@ def main():
     msg='qq has crawled %s records,time cost: %s (seconds)' % (len(infoList), time.time()-oldtime) 
     print msg
     log.info(msg)  
-def main_dummy():
+    
+def main():
     # A multiprocessing.dummy implementation of main(), about 3 pages updated every hour
     # Default use cup_count() threads
     infoList=[] 
@@ -136,8 +138,8 @@ def main_dummy():
         infoList+=result
     for info in infoList:
         try:
-#             table.InsertItemDict(ctable, info)          
-            print time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(info['loadtime'])),info['title']
+            table.InsertItemDict(ctable, info)          
+#             print time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(info['loadtime'])),info['title']
         except:
             logging.error('encoding not supported')
 #     except:
@@ -169,6 +171,6 @@ def main_map():
     log.info(msg)
     
 if __name__=='__main__':
-#     main()
+    main()
 #     main_map()
-    main_dummy()
+#     main_dummy()

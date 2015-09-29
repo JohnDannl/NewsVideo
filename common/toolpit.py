@@ -7,14 +7,14 @@ Created on 2014-10-4
 '''
 import hashlib
 
-def getMvid(web,vid):
-    #use web and vid to generate a merge vid
-    if web and vid:
-        m1=hashlib.md5(web+vid)
-        return m1.hexdigest()
+def getMid(web,url):
+    #use web and url to generate a merge id
+    if web and url:
+        m1=hashlib.md5(url)
+        return web+m1.hexdigest()
 
 if __name__=='__main__':
     web='qq'
     vid='123456789'
-    print getMvid(web,vid)
+    print getMid(web,vid)
     

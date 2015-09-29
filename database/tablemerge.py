@@ -15,8 +15,8 @@ def InsertItem(tablename, data):
     if ChkExistRow(tablename,data[13]):
         return
     query = """INSERT INTO """ + tablename + """(
-               vid,title,url,thumb,summary,keywords,newsid,vtype,source,related,loadtime,duration,web,mvid,mtype,click)
-               values(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"""
+               webid,vid,title,url,thumb,summary,keywords,newsid,vtype,source,related,loadtime,duration,web,mvid,mtype,click)
+               values(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"""
     dbconn.Insert(query, data)
 
 def InsertItemMany(tablename, datas):
@@ -25,16 +25,16 @@ def InsertItemMany(tablename, datas):
 
 def InsertItems(tablename, datas):
     query = """INSERT INTO """ + tablename + """(
-               vid,title,url,thumb,summary,keywords,newsid,vtype,source,related,loadtime,duration,web,mvid,mtype,click)
-               values(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"""
+               webid,vid,title,url,thumb,summary,keywords,newsid,vtype,source,related,loadtime,duration,web,mvid,mtype,click)
+               values(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"""
     dbconn.insertMany(query, datas)
 
 def InsertItemDict(tablename, data):
     if ChkExistRow(tablename, data['mvid']):
         return 1
     query = "INSERT INTO " + tablename + """(
-             vid,title,url,thumb,summary,keywords,newsid,vtype,source,related,loadtime,duration,web,mvid,mtype,click) 
-             values(%(vid)s, %(title)s,%(url)s, %(thumb)s, %(summary)s, %(keywords)s,%(newsid)s,%(vtype)s, %(source)s,
+             webid,vid,title,url,thumb,summary,keywords,newsid,vtype,source,related,loadtime,duration,web,mvid,mtype,click) 
+             values(%(webid)s, %(vid)s, %(title)s,%(url)s, %(thumb)s, %(summary)s, %(keywords)s,%(newsid)s,%(vtype)s, %(source)s,
               %(related)s, %(loadtime)s, %(duration)s, %(web)s, %(mvid)s, %(mtype)s, %(click)s)"""
     dbconn.Insert(query, data)
     return 0
@@ -47,6 +47,33 @@ def getAllCount(tablename):
 def getAllRecords(tablename):
     query = "SELECT * FROM " + tablename
     rows = dbconn.Select(query, ())
+    return rows
+
+def getBriefRecords(tablename,dayago=30):
+    starttime=time.time()-24*3600*dayago
+    query = "SELECT id,title,summary,loadtime,web FROM " + tablename+' where loadtime > %s'
+    rows = dbconn.Select(query, (starttime,))
+    return rows
+
+def getMaxWebId(tablename,web):
+    query='select max(webid) from '+tablename+' where web = %s'
+    rows=dbconn.Select(query,(web,))
+    return rows[0][0]
+
+def getTitleBriefRecords(tablename,dayago=30):
+    starttime=time.time()-24*3600*dayago
+    query = "SELECT mvid,title,loadtime,web FROM " + tablename+' where loadtime > %s'
+    rows = dbconn.Select(query, (starttime,))
+    return rows
+
+def getMaxId(tablename):
+    query='select max(id) from '+tablename
+    rows=dbconn.Select(query,())
+    return rows[0][0]
+
+def getTitleBriefRecordsBiggerId(tablename,tid):
+    query = "SELECT mvid,title,loadtime,web FROM " + tablename+' where id > %s'
+    rows = dbconn.Select(query, (tid,))
     return rows
 
 def getRecordsByLoadTime(tablename, starttime, endtime):
@@ -193,7 +220,8 @@ def increaseClick(mvid):
         
 def CreateNewsTable(tablename):
     query = """CREATE TABLE """ + tablename + """(
-               id serial primary key,               
+               id serial primary key,      
+               webid integer,         
                vid varchar(255),
                title varchar(512),
                url varchar(4096),
@@ -211,10 +239,10 @@ def CreateNewsTable(tablename):
                mtype varchar(255),
                click integer)"""
     dbconn.CreateTable(query, tablename)
-    dbconn.CreateIndex('create index on table %s (mvid)'%(tablename,))
-    dbconn.CreateIndex('create index on table %s (click)'%(tablename,))
-    dbconn.CreateIndex('create index on table %s (loadtime)'%(tablename,))
-    dbconn.CreateIndex('create index on table %s (vtype,loadtime)'%(tablename,))
+    dbconn.CreateIndex('create index on %s (mvid)'%(tablename,))
+    dbconn.CreateIndex('create index on %s (click)'%(tablename,))
+    dbconn.CreateIndex('create index on %s (loadtime)'%(tablename,))
+    dbconn.CreateIndex('create index on %s (mtype,loadtime,mvid)'%(tablename,))
 
 if __name__ == "__main__":
     CreateNewsTable(dbconfig.mergetable) 
