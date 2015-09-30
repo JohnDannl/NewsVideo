@@ -72,7 +72,7 @@ def getExtraPageInfo(num):
                 infoList=tResult['data']
                 for info in infoList:
                     vInfo={}
-                    vInfo['vid']=info['id']
+                    vInfo['vid']=r1('-(\d+)-',info['ext1'])
                     vInfo['title']= info['title'] 
                     vInfo['url']=info['url']                    
                     vInfo['thumb']=info['img']

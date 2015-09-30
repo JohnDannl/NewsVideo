@@ -148,13 +148,13 @@ def CreateNewsTable(tablename):
     dbconn.CreateIndex('create index on %s (url)'%tablename)
 
 if __name__ == "__main__":
-    CreateNewsTable(dbconfig.tableName['china'])
-    CreateNewsTable(dbconfig.tableName['ifeng'])
-    CreateNewsTable(dbconfig.tableName['kankan'])
-    CreateNewsTable(dbconfig.tableName['qq']) 
+#     CreateNewsTable(dbconfig.tableName['china'])
+#     CreateNewsTable(dbconfig.tableName['ifeng'])
+#     CreateNewsTable(dbconfig.tableName['kankan'])
+#     CreateNewsTable(dbconfig.tableName['qq']) 
     CreateNewsTable(dbconfig.tableName['sina']) 
-    CreateNewsTable(dbconfig.tableName['sohu'])   
-    CreateNewsTable(dbconfig.tableName['v1']) 
+#     CreateNewsTable(dbconfig.tableName['sohu'])   
+#     CreateNewsTable(dbconfig.tableName['v1']) 
     
 #     rows=getTopETBVRecords(dbconfig.tableName[2],'2014-09-04 10:09:02','1310457')
 #     if rows !=-1:
