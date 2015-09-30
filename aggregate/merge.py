@@ -37,8 +37,8 @@ def __addDoctoTable(doc):
         return
     if len(rows[0])>0:
         exrecord=list(rows[0])
-        url,web,vtype=exrecord[3],exrecord[13],exrecord[8]
-        mid,mtype,click=toolpit.getMid(web,url),classify.getMtype(web, vtype),0
+        vid,web,vtype=exrecord[1],exrecord[13],exrecord[8]
+        mid,mtype,click=toolpit.getMid(web,vid),classify.getMtype(web, vtype),0
         exrecord+=[mid,mtype,click]  
         tablemerge.InsertItem(dbconfig.mergetable, exrecord)    
         
