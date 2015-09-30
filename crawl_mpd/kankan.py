@@ -63,9 +63,10 @@ def getMainPageInfo(cat):
                 continue
             vInfo['vid']=r1(r'.*?/(\d+)\.',vInfo['url'])
             vInfo['newsid']= vInfo['vid']            
-            vInfo['title']=h2.getText()
-            timeStr=item.find('span',{'class':"time"}).getText()
-            vInfo['loadtime']=long(time.mktime(time.strptime(timeStr,'%Y-%m-%d %H:%M:%S')))       
+            vInfo['title']=h2.string
+            #timeStr=item.find('span',{'class':"time"}).string
+            #vInfo['loadtime']=long(time.mktime(time.strptime(timeStr,'%Y-%m-%d %H:%M:%S'))) 
+            vInfo['loadtime']=long(item.get('data-time'))      
             vInfo['duration']=''
             vInfo['web']=ctable
             vInfo['vtype']= categoryDict.get(cat)
@@ -81,7 +82,8 @@ def getMainPageInfo(cat):
                 vInfo['thumb']=''
             vInfo['keywords']=''
             vInfo['source']='kankannews'
-            vInfo['related']=''            
+            vInfo['related']=''        
+            #print time.strptime(time.localtime(vInfo['loadtime']),'%Y-%m-%d %H:%M:%S'),vInfo['title']    
             vInfoList.append(vInfo)            
     return vInfoList
 
@@ -111,7 +113,7 @@ def main():
     for info in infoList:
         try:
             table.InsertItemDict(ctable, info)
-#             print time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(vInfo['loadtime'])),info['title']
+#             print time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(info['loadtime'])),info['title']
         except:
             logging.error('encoding not supported')            
     msg='kankan has crawled %s records,time cost: %s (seconds)' % (len(infoList), time.time()-oldtime) 
@@ -144,3 +146,4 @@ if __name__=='__main__':
     main()
 #     print list(categoryDict.iterkeys())
 #     main_map()
+#     getMainPageInfo('world')
