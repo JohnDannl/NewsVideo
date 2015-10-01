@@ -32,7 +32,7 @@ def get_records_dayago(tablename,dayago=30):
         return   
     docs={}
     for row in rows:
-        # id,title,summary,ctime,source
+        # id,title,summary,loadtime,web
         summary=row[1].strip()
         docs[Doc(row[0],row[3],row[4])]=delpunc(' '.join(jieba.cut(summary)).lower()).split()
     return docs

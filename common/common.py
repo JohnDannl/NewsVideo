@@ -10,6 +10,8 @@ import cookielib
 from StringIO import StringIO
 import gzip
 
+__all__=['r1','getHtml','getHtmlwithCookie','getHtmlwithSinaCookie','getHtmlwithQQCookie']
+
 def r1(pattern, text):
     m = re.search(pattern, text)
     if m:

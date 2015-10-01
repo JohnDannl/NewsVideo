@@ -13,7 +13,6 @@ import sys
 
 sys.path.append(r'.')
 sys.path.append(r'./database')
-sys.path.append(r'./crawl')
 sys.path.append(r'./aggregate')
 sys.path.append(r'./crawl_mpd')
 # from apscheduler.scheduler import Scheduler

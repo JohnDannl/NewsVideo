@@ -50,17 +50,20 @@ def getAllRecords(tablename):
     return rows
 
 def getBriefRecords(tablename,dayago=30):
+    # For duplicate-removal
     starttime=time.time()-24*3600*dayago
     query = "SELECT id,title,summary,loadtime,web FROM " + tablename+' where loadtime > %s'
     rows = dbconn.Select(query, (starttime,))
     return rows
 
 def getMaxWebId(tablename,web):
+    # For duplicate-removal
     query='select max(webid) from '+tablename+' where web = %s'
     rows=dbconn.Select(query,(web,))
     return rows[0][0]
 
 def getTitleBriefRecords(tablename,dayago=30):
+    # For duplicate-removal
     starttime=time.time()-24*3600*dayago
     query = "SELECT mvid,title,loadtime,web FROM " + tablename+' where loadtime > %s'
     rows = dbconn.Select(query, (starttime,))
@@ -72,6 +75,7 @@ def getMaxId(tablename):
     return rows[0][0]
 
 def getTitleBriefRecordsBiggerId(tablename,tid):
+    # For duplicate-removal
     query = "SELECT mvid,title,loadtime,web FROM " + tablename+' where id > %s'
     rows = dbconn.Select(query, (tid,))
     return rows
@@ -98,18 +102,50 @@ def getTitleByLoadTime(tablename,startday=30,enday=None):
     rows = dbconn.Select(query, (starttime,endtime))   
     return rows
 
-def getRecordsByMVid(tablename,mvid):
-    # return the user clicked video info,should be only one if no accident
-    # the return column:id,vid,title,url,thumb,summary,keywords,newsid,vtype,source,
-    # related,loadtime,duration,web,mvid,mtype,click
+def getRecordsByMVid(tablename,mvid):    
     query = "SELECT * FROM " + tablename + """ WHERE mvid = %s""" 
     rows = dbconn.Select(query, (mvid,))   
     return rows
 
 def getTopUrls(tablename,topnum=10):
+    # For video parser test
 #     return [(url,vid),]
     query='select url,mvid from '+tablename+' order by loadtime desc,mvid desc limit %s'
     rows=dbconn.Select(query,(topnum,))
+    return rows
+
+def getTopTitles(tablename,topnum=1000,mtype=None):
+    # For related search
+    if not mtype:
+        query='select id,title from '+tablename+' order by loadtime desc,id desc limit %s'
+        rows=dbconn.Select(query,(topnum,))
+    else:
+        query='select id,title from '+tablename+' where mtype = %s order by loadtime desc,id desc limit %s'
+        rows=dbconn.Select(query,(mtype,topnum))
+    return rows
+
+def getRecordById(tablename,m_id):
+    # For related search
+    query='select * from '+tablename+' where id= %s'
+    rows=dbconn.Select(query,(m_id,))
+    return rows
+
+def getTitleBiggerId(tablename,m_id):
+    # For related search
+    query='select id,title from '+tablename+' where id > %s'
+    rows=dbconn.Select(query,(m_id,))
+    return rows
+
+def getRecordsById(tablename,tid):
+    # For related search
+    query = "SELECT * FROM " + tablename+' where id = %s'
+    rows = dbconn.Select(query, (tid,))
+    return rows
+
+def getRecordsByIds(tablename,tids):
+    # For related search
+    query = "SELECT * FROM " + tablename + " WHERE id in "+tids
+    rows = dbconn.Select(query, ())    
     return rows
 
 def getTopRecords(tablename,topnum=10,mtype=None):

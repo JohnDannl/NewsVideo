@@ -20,4 +20,5 @@ tableName={'sina':'sina','sohu':'sohu','v1':'v1','ifeng':'ifeng',
 mergetable='merge'
 infotable='mergeinfo'
 requesttable='request'
+w2vtable='w2v'
 # dirDic={r'H:\movies':movietable,r'H:\movies1':movietable}
