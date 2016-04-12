@@ -27,7 +27,7 @@ def getFirstPageInfo():
     
     vInfoList=[]
     if content:
-        soup = BeautifulSoup(content, from_encoding='utf-8')
+        soup = BeautifulSoup(content, 'html.parser',from_encoding='utf-8')
         videoList=[]
         recommend_list=soup.find('div',{'class':"VDM_recommend"}).find_all('li')
         videoList+=recommend_list

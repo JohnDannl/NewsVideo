@@ -89,11 +89,11 @@ def CreateNewsTable(tablename):
     dbconn.CreateIndex('create index on %s (mid)'%tablename)
 
 if __name__ == "__main__":    
-#     CreateNewsTable(dbconfig.w2vtable)     
+    CreateNewsTable(dbconfig.w2vtable)     
 
 #     rows=getTopRecords(dbconfig.w2vtable,10)  
 #     if rows !=-1:
 #         for item in rows:
 #             print item[1],item[2]  
-    print getMaxMid(dbconfig.w2vtable)
+#     print getMaxMid(dbconfig.w2vtable)
  

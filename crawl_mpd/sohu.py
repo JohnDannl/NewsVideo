@@ -39,7 +39,7 @@ def getMainPageInfo(cat):
     content=getHtml(url)     
     vInfoList=[] 
     if content:
-        soup = BeautifulSoup(content, from_encoding='utf-8')
+        soup = BeautifulSoup(content,'html.parser', from_encoding='utf-8')
         soup_content=soup.find('ul', {'class':"st-list short cfix"})
         videoList=soup_content.find_all('li')        
         for item in videoList:

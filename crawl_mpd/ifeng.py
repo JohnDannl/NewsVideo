@@ -14,7 +14,7 @@ import multiprocessing
 from common.common import *
 from common.logger import log
 from bs4 import BeautifulSoup
-import time
+import time,re
 import json
 from database import table
 from database import dbconfig
@@ -32,7 +32,7 @@ def getMainPageInfo(page):
     content=getHtml(url)
     vInfoList=[]
     if content:
-        soup = BeautifulSoup(content, from_encoding='utf-8')
+        soup = BeautifulSoup(content,'html.parser', from_encoding='utf-8')
         ul=soup.find('ul', id="list_infor")
         videoList=ul.find_all('li')        
         for item in videoList:
@@ -66,7 +66,7 @@ def getMainPageInfo(page):
 def _getSubContentInfo(vInfo): 
     try:
         subContent=getHtml(vInfo['url'])  
-        subSoup = BeautifulSoup(subContent,from_encoding='utf-8')
+        subSoup = BeautifulSoup(subContent,'html.parser',from_encoding='utf-8')
         vInfo['keywords']=r1(r'(.*?)----',subSoup.find('meta',{'name':"keywords"}).get('content')).replace(' ',',')
         vInfo['summary']=subSoup.find('meta',{'name':"description"}).get('content')        
         vInfo['source']=r1(r'videoSr = "(.*?)"',subContent)

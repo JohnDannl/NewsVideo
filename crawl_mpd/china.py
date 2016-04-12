@@ -57,7 +57,7 @@ def getMainPageInfo(page):
 def _getSubContentInfo(vInfo):
     try:
         subContent=getHtml(vInfo['url'])  
-        subSoup = BeautifulSoup(subContent,from_encoding='gbk')
+        subSoup = BeautifulSoup(subContent,'html.parser',from_encoding='gbk')
         vInfo['keywords']=subSoup.find('meta',{'name':"keywords"}).get('content')
         vInfo['summary']=subSoup.find('meta',{'name':"description"}).get('content')
         videoInfo=subSoup.find('div',{'class':"video_con1_text_top"})

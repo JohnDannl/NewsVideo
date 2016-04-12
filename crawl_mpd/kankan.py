@@ -53,7 +53,7 @@ def getMainPageInfo(cat):
 #     content=fileKit.readFileBinary(filePath)
     vInfoList=[]
     if content:
-        soup = BeautifulSoup(content, from_encoding='utf-8')
+        soup = BeautifulSoup(content,'html.parser', from_encoding='utf-8')
         videoList=soup.find_all('div',{'class':"list-item clearfix"})
         for item in videoList:
             vInfo={}            
@@ -90,7 +90,7 @@ def getMainPageInfo(cat):
 def _isVideo(url): 
     subContent=getHtml(url)  
     if subContent:
-        subSoup = BeautifulSoup(subContent,from_encoding='utf-8')
+        subSoup = BeautifulSoup(subContent,'html.parser',from_encoding='utf-8')
         videobox=subSoup.find('div',{'class':"video w1170"})
         if not videobox:
             #there is no video info
